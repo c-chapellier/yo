@@ -1,18 +1,8 @@
 #include "../headers/system.h"
 
-typedef struct
-{
-    DIR *input_dir;
-    char input_dir_path[PATH_MAX];
-    FILE *output_stream;
-    uint8_t nb_threads;
-    bool verbose;
-} args_t;
-
 args_t args;
 
-void usage(char *prog_name)
-{
+void usage(char *prog_name){
     fprintf(stderr, "USAGE:\n");
     fprintf(stderr, "    %s [OPTIONS] input_dir\n", prog_name);
     fprintf(stderr, "    input_dir: path to the directory containing the instance files with the encoded messages\n");
@@ -21,8 +11,7 @@ void usage(char *prog_name)
     fprintf(stderr, "    -v : enable debugging messages. If not set, no such messages will be displayed (except error messages on failure)\n");
 }
 
-int parse_args(args_t *args, int argc, char *argv[])
-{
+int parse_args(args_t *args, int argc, char *argv[]){
     memset(args, 0, sizeof(args_t));
 
     // Default values of the arguments
@@ -30,14 +19,11 @@ int parse_args(args_t *args, int argc, char *argv[])
     args->verbose = false;
     args->output_stream = stdout;
     int opt;
-    while ((opt = getopt(argc, argv, "n:vf:")) != -1)
-    {
-        switch (opt)
-        {
+    while ((opt = getopt(argc, argv, "n:vf:")) != -1){
+        switch (opt){
         case 'n':
             args->nb_threads = atoi(optarg);
-            if (args->nb_threads == 0)
-            {
+            if (args->nb_threads == 0){
                 fprintf(stderr, "The number of computing threads must be a positive integer, got: %s\n", optarg);
                 return -1;
             }
@@ -47,8 +33,7 @@ int parse_args(args_t *args, int argc, char *argv[])
             break;
         case 'f':
             args->output_stream = fopen(optarg, "w");
-            if (args->output_stream == NULL)
-            {
+            if (args->output_stream == NULL){
                 fprintf(stderr, "Impossible to open the output file %s: %s\n", optarg, strerror(errno));
                 return -1;
             }
@@ -61,15 +46,13 @@ int parse_args(args_t *args, int argc, char *argv[])
         }
     }
 
-    if (optind == argc)
-    {
+    if (optind == argc){
         fprintf(stderr, "You must provide an input directory containing the instance files!\n");
         return -1;
     }
 
     // Source: https://stackoverflow.com/questions/11736060/how-to-read-all-files-in-a-folder-using-c
-    if (NULL == (args->input_dir = opendir(argv[optind])))
-    {
+    if (NULL == (args->input_dir = opendir(argv[optind]))){
         fprintf(stderr, "Impossible to open the directory containing the input instance files %s: %s\n", argv[optind], strerror(errno));
         return -1;
     }
@@ -78,15 +61,16 @@ int parse_args(args_t *args, int argc, char *argv[])
 
     return 0;
 }
-    // """
-    // Construit le bloc sur base des données et de la taille d'un bloc
 
-    // :param data: les données du bloc en format binaire. Si le fichier d'input est bien formé, celui-ci est découpé
-    //              `size` symboles de taille `word_size` bytes, suivis de `redundancy` symboles de taille `word_size`
-    // :param size: le nombre de symboles sources dans un bloc
-    // :return block: le block construit, sous la forme d'une matrice (une ligne = un symbole)
-    // """
-    // trouvé le type de data 
+/**
+ * 
+ * Construit le bloc sur base des données et de la taille d'un bloc
+ * @param data: les données du bloc en format binaire. Si le fichier d'input est bien formé, celui-ci est découpé `size` symboles de taille `word_size` bytes, suivis de `redundancy` symboles de taille `word_size`
+ * @param size: le nombre de symboles sources dans un bloc
+ * @param msg: le message bianire donné
+ * @return: le block construit, sous la forme d'une matrice (une ligne = un symbole)
+ */
+
 block_t make_block(uint8_t* data, message_t msg, int size){
 
     block_t bloc ; 
@@ -103,13 +87,13 @@ block_t make_block(uint8_t* data, message_t msg, int size){
     return bloc;
 }
 
-    // """
-    // Fonction d'aide. Retourne un string stocké en binaire dans le bloc passé en argument
-
-    // :param block: le bloc en question
-    // :param size: la taille du bloc
-    // :return s: le string du bloc converti en binaire
-    // """
+/**
+ * 
+ * Fonction d'aide. Retourne un string stocké en binaire dans le bloc passé en argument
+ * @param new_block: le bloc en question
+ * @param msg: le message bianire donné
+ */    
+ 
 void print_block(const char *s, block_t new_block, message_t msg){ // pas important juste dans verbosse regarder après
     printf("%s {\n", s);
     for (int i = 0 ; i < msg.block_size + msg.redundancy; i++){
@@ -158,8 +142,7 @@ void print_block(const char *s, block_t new_block, message_t msg){ // pas import
     //             ni les informations repries ci-dessus
     // """
 
-uint64_t to_le_64(uint64_t n)
-{
+uint64_t to_le_64(uint64_t n){
     uint64_t t = n;
     uint8_t *an = (uint8_t *)&n, *at = (uint8_t *)&t;
 
@@ -169,8 +152,7 @@ uint64_t to_le_64(uint64_t n)
     return t;
 }
 
-message_t get_file_infos(uint8_t *data)
-{
+message_t get_file_infos(uint8_t *data){
     message_t msg, *msg_tmp = (message_t *)data;
 
     msg.seed = BIG_TO_LITTLE_ENDIAN_32BITS(msg_tmp->seed);
@@ -182,8 +164,7 @@ message_t get_file_infos(uint8_t *data)
     return msg;
 }
 
-void write_block(int output_file, block_t block, int size, int word_size)
-{
+void write_block(int output_file, block_t block, uint32_t size, uint32_t word_size){
     for (int i = 0; i < size; i++)
     {
         for (int j = 0; j < word_size; j++)
@@ -194,10 +175,10 @@ void write_block(int output_file, block_t block, int size, int word_size)
             //     output_file.write(int(block[i][j]).to_bytes(1, 'big'));
         }
     }
-    // printf("\n");
+    //printf("\n");
 }
 
-void write_last_block(int output_file, block_t block, uint8_t size, uint8_t word_size,uint8_t last_word_size){
+void write_last_block(int output_file, block_t block, uint32_t size, uint32_t word_size, uint32_t last_word_size){
     for (int i = 0; i < size - 1 ; i++)
     {
         for (int j = 0; j < word_size; j++)
@@ -211,19 +192,19 @@ void write_last_block(int output_file, block_t block, uint8_t size, uint8_t word
     for (int j = 0; j < last_word_size; j++){
         printf("%c", block.bloc[size - 1][j]);
     }
-    // printf("\n") ;
+    printf("\n") ;
 }
 
-int main(int argc, char *argv[])
-{
-    args_t args;
+int main(int argc, char *argv[]){
+    float temps;
+    clock_t t1, t2;
+    t1 = clock();
+
     int err = parse_args(&args, argc, argv);
-    if (err == -1)
-    {
+    if (err == -1){
         exit(EXIT_FAILURE);
     }
-    else if (err == 1)
-    {
+    else if (err == 1){
         exit(EXIT_SUCCESS);
     }
 
@@ -234,15 +215,12 @@ int main(int argc, char *argv[])
     // This is an example of how to open the instance files of the input directory. You may move/edit it during the project
     struct dirent *directory_entry;
     FILE *input_file;
-    while ((directory_entry = readdir(args.input_dir)))
-    {
+    while ((directory_entry = readdir(args.input_dir))){
         // Ignore parent and current directory
-        if (!strcmp(directory_entry->d_name, "."))
-        {
+        if (!strcmp(directory_entry->d_name, ".")){
             continue;
         }
-        if (!strcmp(directory_entry->d_name, ".."))
-        {
+        if (!strcmp(directory_entry->d_name, "..")){
             continue;
         }
 
@@ -254,13 +232,11 @@ int main(int argc, char *argv[])
         strcat(full_path, directory_entry->d_name);
 
         input_file = fopen(full_path, "r");
-        if (input_file == NULL)
-        {
+        if (input_file == NULL){
             fprintf(stderr, "Failed to open the input file %s: %s\n", full_path, strerror(errno));
             goto file_read_error;
         }
-        if (args.verbose)
-        {
+        if (args.verbose){
             // This is a simple example of how to use the verbose mode
             fprintf(stderr, "Successfully opened the file %s\n", full_path);
         }
@@ -280,13 +256,12 @@ int main(int argc, char *argv[])
         // get variables
         message_t msg = get_file_infos(binary_data);
 
-        if (args.verbose)
-        {
+        if (args.verbose){
             printf("seed = %d\n", msg.seed);
             printf("block_size = %d\n", msg.block_size);
             printf("word_size = %d\n", msg.word_size);
             printf("redundancy = %d\n", msg.redundancy);
-            printf("message_size = %llu\n", msg.message_size);
+            printf("message_size = %lu\n", msg.message_size);
             // printf("coefs = %d\n", msg.coefs[][]);
             // print(binary_data);
         }
@@ -312,27 +287,27 @@ int main(int argc, char *argv[])
         // printf("nb_blocks = %d\n", nb_blocks);
 
         int contains_uncomplete_block = 0;
-        if (msg.message_size != nb_blocks * msg.block_size * msg.word_size)  //# Dernier bloc non complet (i.e., moins de block_size symboles)
-        {
+        if (msg.message_size != nb_blocks * msg.block_size * msg.word_size){  //# Dernier bloc non complet (i.e., moins de block_size symboles)
             nb_blocks -= 1;
             contains_uncomplete_block = 1;
         }
 
         int readed = 0; // # Nombre de bytes lus jusqu'à présent
-        for (int i = 0; i < nb_blocks; ++i)
-        {
+        for (int i = 0; i < nb_blocks; ++i){
             block_t current_block = make_block((uint8_t *)&binary_data[i * step], msg, msg.block_size);
-            if (args.verbose)
-            {
-                print_block("block 1", current_block, msg); 
-            }
             block_t response = process_block(current_block, msg, msg.block_size);
-            if (args.verbose)
-            {
-                print_block("block 2", response, msg); 
+            if (args.verbose) {
+                print_block("block before treating", current_block, msg);
+                print_block("block after treating", response, msg);
             }
             
             write_block(0, response, msg.block_size, msg.word_size);
+            
+            // On free le bloc 'current_block' 
+            for (int i = 0 ; i<msg.redundancy+msg.block_size; i++){
+                free((void*)current_block.bloc[i]);
+            }
+            free((void**)current_block.bloc);
 
             readed += step;
         }
@@ -345,8 +320,7 @@ int main(int argc, char *argv[])
         // printf("readed_symbols: %d\n", readed_symbols);
         // printf("nb_remaining_symbols: %d\n", nb_remaining_symbols);
 
-        if (contains_uncomplete_block)
-        {
+        if (contains_uncomplete_block){
             block_t last_block = make_block(&binary_data[readed], msg, nb_remaining_symbols);
             block_t decoded = process_block(last_block, msg, nb_remaining_symbols);
             // # Le dernier symbole peut ne pas etre complet et contenir du padding
@@ -365,24 +339,23 @@ int main(int argc, char *argv[])
 
     // Close the input directory and the output file
     err = closedir(args.input_dir);
-    if (err < 0)
-    {
+    if (err < 0){
         fprintf(stderr, "Error while closing the input directory containing the instance files\n");
     }
-    if (args.output_stream != stdout)
-    {
+    if (args.output_stream != stdout){
         fclose(args.output_stream);
     }
+    t2 = clock();
+    temps = (float)(t2-t1)/CLOCKS_PER_SEC;
+    // printf("temps = %f\n", temps);
     return 0;
 
 file_read_error:
     err = closedir(args.input_dir);
-    if (err < 0)
-    {
+    if (err < 0){
         fprintf(stderr, "Error while closing the input directory containing the instance files\n");
     }
-    if (args.output_stream != stdout)
-    {
+    if (args.output_stream != stdout){
         fclose(args.output_stream);
     }
     exit(EXIT_FAILURE);

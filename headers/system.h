@@ -14,34 +14,52 @@
 #include <stdbool.h>
 #include <assert.h>
 #include <math.h>
+#include <pthread.h>
+#include <time.h>
 
 #include "gf256_tables.h"
 #include "portable_endian.h"
-#include "portable_semaphore.h"
 
-typedef struct
-{
-    uint8_t **bloc ;
-    uint8_t first_elment_bloc ; 
-    uint8_t size ; 
-    
-} block_t ;
+//#include "portable_semaphore.h"
+typedef struct {
+    DIR *input_dir;
+    char input_dir_path[PATH_MAX];
+    FILE *output_stream;
+    uint8_t nb_threads;
+    bool verbose;
+} args_t;
 
-typedef struct
-{
-    uint32_t seed ; 
-    uint32_t block_size ;
-    uint32_t word_size ;
-    uint32_t redundancy ;
-    uint64_t message_size ;
-    uint8_t **coeffs ;
+extern args_t args;
+
+
+typedef struct {
+    bool *unknown_indexes;
+    uint8_t unknowns;
+
+} lost_words;
+
+typedef struct {
+    uint8_t **bloc;
+    uint8_t first_elment_bloc;
+    uint8_t size;
+
+} block_t;
+
+typedef struct {
+    uint32_t seed;
+    uint32_t block_size;
+    uint32_t word_size;
+    uint32_t redundancy;
+    uint64_t message_size;
+    uint8_t **coeffs;
 } message_t;
 
 
-typedef struct
-{
-    // TODO
-} system_t;
+typedef struct {
+    uint8_t **A;
+    uint8_t **B;
+    uint8_t nb_unk;
+} linear_system;
 
 block_t process_block(block_t new_block, message_t msg, int size);
 

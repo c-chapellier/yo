@@ -4,8 +4,7 @@
         "name": "Mac",
         "intelliSenseMode": "clang-x64",
         "includePath": [
-            "${workspaceFolder}",
-            "${workspaceFolder}/include"
+            "${workspaceFolder}"
         ],
         "macFrameworkPath": ["/System/Library/Frameworks"],
         "compilerPath": "/usr/bin/clang",
