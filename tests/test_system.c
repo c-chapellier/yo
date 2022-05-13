@@ -1,4 +1,3 @@
-#include "../headers/tinymt32.h"
 #include <CUnit/Basic.h>
 #include "../src/system.c"
 void test_gf_256_full_add_vector() {
@@ -13,7 +12,6 @@ void test_gf_256_full_add_vector() {
     symbol_1[4] = 0 ;
     symbol_1[5] = 250 ;
     symbol_1[6] = 255 ;
-
     symbol_2[0] = 85 ;
     symbol_2[1] = 204;
     symbol_2[2] = 170;
@@ -21,9 +19,6 @@ void test_gf_256_full_add_vector() {
     symbol_2[4] = 0 ;
     symbol_2[5] = 122 ;
     symbol_2[6] =  1 ; 
-
-
-    
     add_vecteur[0] = 96 ;
     add_vecteur[1] = 51;
     add_vecteur[2] = 170;
@@ -99,158 +94,18 @@ void test_gf_256_inv_vector(){
         }
     free(symbol_1) ; 
 }
-
-void test_gf_256_gaussian_elimination_negatif() {
-    uint8_t **a = malloc(2 * sizeof (uint8_t *));
-	for (int i = 0; i < 2; ++i)
-		a[i] = malloc(2 * sizeof (uint8_t));
-	a[0][0] = 2;
-	a[0][1] = 1;
-	a[1][0] = 3;
-	a[1][1] = 1;
-
-	uint8_t *b = malloc(2 * sizeof (uint8_t));
-	b[0] = 3;
-	b[1] = 2;
-
-    uint8_t *answear = malloc(2 * sizeof (uint8_t));
-    answear[0] = 255 ; 
-    answear[1] = 5 ; 
-
-
-    gf_256_gaussian_elimination(a, &b, 2, 2);
-    CU_ASSERT_EQUAL(*b,*answear) ; 
-    free(answear) ;
-    free(b) ;
-}
-// pas encore bonne doit modivier pour le determinant 
-uint8_t* test_gf_256_gaussian_elimination_no_solution() {
-    uint8_t **a = malloc(2 * sizeof (uint8_t *));
-	for (int i = 0; i < 2; ++i)
-		a[i] = malloc(2 * sizeof (uint8_t));
-	a[0][0] = 2;
-	a[0][1] = 1;
-	a[1][0] = 2;
-	a[1][1] = 1;
-
-	uint8_t *b = malloc(2 * sizeof (uint8_t));
-	b[0] = 3;
-	b[1] = 2;
-    gf_256_gaussian_elimination(a, &b, 2, 2);
-    return b ; 
-  
-}
-
 int main()
 {
-    // uint8_t matrix [][] ={{0,0,0},{58,41,0},{48,218,196},{135,164,243},{122,252,234},{80,117,232}} ;
-    // for (int i = 0; i < 6; i++) {
-    //     for(int l = 0 ;l < 3; l++) {
-    //         printf("%d \t", matrix[i][l]);
-    //     }
-    //     printf("\n") ;
-    // }
-
-    //Structure du main pour les testes, elle consistes juste a changer les mots de la fonction comme voir en bas 
-    // -------- test uint8_t **gen_coefs --------
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite gen_co = CU_add_suite("gen_coeff", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(gen_co, "answear_negatif",test_tinymt32_gen_42);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-    
-
-    
-    
-    // -------- test gf_256_gaussian_elimination --------
-    // det = 0 
-    //     uint8_t **a = malloc(2 * sizeof (uint8_t *));
-	// for (int i = 0; i < 2; ++i)
-	// 	a[i] = malloc(2 * sizeof (uint8_t));
-	// a[0][0] = 2;
-	// a[0][1] = 1;
-	// a[1][0] = 2;
-	// a[1][1] = 1;
-
-	// uint8_t *b = malloc(2 * sizeof (uint8_t));
-	// b[0] = 3;
-	// b[1] = 2;
-    // gf_256_gaussian_elimination(a, &b, 2, 2);
-
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite gaussienSuite = CU_add_suite("gaussien", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(gaussienSuite, "answear_negatif",test_gf_256_gaussian_elimination_negatif);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite gaussienSuite = CU_add_suite("gaussien", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(gaussienSuite, "answear_negatif",test_gf_256_gaussian_elimination_negatif);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-    
-    
-    
-    // // -------- test_tinymt32_gen_42 --------
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite gen_coefSuite = CU_add_suite("gen_coef", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(gen_coefSuite, "correct_coeffs", test_tinymt32_gen_42);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-    
-    
-    // // --------test_gf_256_full_add_vector--------
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite add_vectorSuite = CU_add_suite("add_vector", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(add_vectorSuite, "correct_coeffs", test_gf_256_full_add_vector);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-
-    
-    
-
-    
-
-    // --------test_gf_256_mul_vector--------
-    
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite mul_vectorSuite = CU_add_suite("mul_vector", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(mul_vectorSuite, "correct_coeffs", test_gf_256_mul_vector);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-    
-
-    // // --------test_gf_256_inv_vector--------
-    // if (CU_initialize_registry() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "can't initialize test registry");
-    // CU_pSuite inv_vectorSuite = CU_add_suite("inv_vector", NULL, NULL);
-    // if (CU_get_error() != CUE_SUCCESS)
-    //     errx(EXIT_FAILURE, "%s", CU_get_error_msg());
-    // CU_add_test(inv_vectorSuite, "correct_coeffs", test_gf_256_inv_vector);
-    // CU_basic_run_tests();
-    // CU_cleanup_registry();
-    
-     return 0;
-
-
-    
-
+    if (CU_initialize_registry() != CUE_SUCCESS)
+        errx(EXIT_FAILURE, "can't initialize test registry");
+    CU_pSuite system = CU_add_suite("system", NULL, NULL);
+    if (CU_get_error() != CUE_SUCCESS)
+        errx(EXIT_FAILURE, "%s", CU_get_error_msg());
+    CU_add_test(system, "gen_42", test_tinymt32_gen_42);
+    CU_add_test(system, "full_add_vector", test_gf_256_full_add_vector);
+    CU_add_test(system, "mul_vector", test_gf_256_mul_vector);
+    CU_add_test(system, "inv_vector", test_gf_256_inv_vector);
+    CU_basic_run_tests();
+    CU_cleanup_registry();    
+    return 0;
 }

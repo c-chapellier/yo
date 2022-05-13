@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "tinymt32.h": "c",
+        "make_block.h": "c",
+        "gf256_tables.h": "c",
+        "system.h": "c",
+        "basic.h": "c"
+    }
+}

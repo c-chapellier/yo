@@ -1,12 +1,12 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <err.h>
-#include <stdint.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
+#include <err.h>
 #include <errno.h>
 #include <getopt.h>
 #include <limits.h>
@@ -19,8 +19,11 @@
 
 #include "gf256_tables.h"
 #include "portable_endian.h"
+#include "process_block.h"
+#include "make_block.h"
 
 //#include "portable_semaphore.h"
+
 typedef struct {
     DIR *input_dir;
     char input_dir_path[PATH_MAX];
@@ -30,38 +33,6 @@ typedef struct {
 } args_t;
 
 extern args_t args;
-
-
-typedef struct {
-    bool *unknown_indexes;
-    uint8_t unknowns;
-
-} lost_words;
-
-typedef struct {
-    uint8_t **bloc;
-    uint8_t first_elment_bloc;
-    uint8_t size;
-
-} block_t;
-
-typedef struct {
-    uint32_t seed;
-    uint32_t block_size;
-    uint32_t word_size;
-    uint32_t redundancy;
-    uint64_t message_size;
-    uint8_t **coeffs;
-} message_t;
-
-
-typedef struct {
-    uint8_t **A;
-    uint8_t **B;
-    uint8_t nb_unk;
-} linear_system;
-
-block_t process_block(block_t new_block, message_t msg, int size);
 
 /**
  *
